@@ -171,10 +171,26 @@ class UserController < ApiController
         puts "id::id::id::id::id::id::", @id.inspect
         puts "id::id::id::id::id::id::", @id.inspect
         puts "id::id::id::id::id::id::", @id.inspect
-        delete_all_others_of_this_box(@id, user, pic_api_params[:box_id])
+        # delete_all_others_of_this_box(@id, user, pic_api_params[:box_id])
         render :json => {:status => 200, :message => "Image uploaded successfully", :id => @id, :url_original => @url, :url_medium => @url_medium, :url_thumb => @url_thumb}
       else
         render :json => {:status => 500, :message => "Image upload failed"}
+      end
+    else
+      error "No such user found."
+    end
+  end
+
+  def delete_pic
+    user = User.find_by_auth_token(user_img_params[:auth_token])
+    unless user.blank?
+      user.update_attributes(:lng => user_img_params[:lng].to_f, :lat => user_img_params[:lat].to_f)
+      image = UserImage.where('id != ?', pic_api_params[:id]).first
+      if image.blank?
+        image.destroy!
+        success "Deleted Successfully."
+      else
+        error "No such voice found."
       end
     else
       error "No such user found."
@@ -390,7 +406,7 @@ class UserController < ApiController
   end
 
   def pic_api_params
-    params.permit(:auth_token, :username, :image_data, :lng, :lat, :box_id, :title, :category)
+    params.permit(:auth_token, :username, :image_data, :lng, :lat, :box_id, :title, :category, :id)
   end
 
   def user_img_params
