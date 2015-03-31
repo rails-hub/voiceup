@@ -32,6 +32,24 @@ class UserController < ApiController
     # end
   end
 
+  def register_with_email
+    begin
+      email = register_api_params[:email].downcase
+      @user = User.find_by_email(email)
+      if @user.blank?
+        @user = User.create(:email => email, :username => register_api_params[:username], :password => register_api_params[:password], :device_token => register_api_params[:device_token], :lat => register_api_params[:lat], :lng => register_api_params[:lng])
+        render :json => @user
+      else
+        @user.update_attribute('lng', register_api_params[:lng].to_f)
+        @user.update_attribute('lat', register_api_params[:lat].to_f)
+
+        render :json => @user
+      end
+    rescue Exception => e
+      error "Please provide all required fields"
+    end
+  end
+
   def update_profile
     @find_user = User.find_by_auth_token(params[:auth_token]) unless params[:auth_token].nil?
     if @find_user.nil?
@@ -170,8 +188,8 @@ class UserController < ApiController
       u = User.where('id != ?', user.id).first
       find_distance = distance user.lat, user.lng, u.lat, u.lng
       if find_distance <= 20
-      images = add_likes(u.user_images.pluck(:url, :created_at))
-      render :json => {:status => 200, :message => "Success", :user_id => u.id, :urls => images}
+        images = add_likes(u.user_images.pluck(:url, :created_at))
+        render :json => {:status => 200, :message => "Success", :user_id => u.id, :urls => images}
       else
         render :json => {:status => 200, :message => "You are at longer distance than 20m from the other device."}
       end
