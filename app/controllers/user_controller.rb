@@ -192,7 +192,7 @@ class UserController < ApiController
       image = UserImage.where('id = ?', pic_api_params[:id]).first
       puts "FIND IMAGE FOR #{pic_api_params[:id]}::::"
       puts "IMAGE IS::::::",image.inspect
-      if image.blank?
+      unless image.blank?
         image.destroy!
         success "Deleted Successfully."
       else
