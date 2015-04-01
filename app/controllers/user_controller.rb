@@ -17,14 +17,14 @@ class UserController < ApiController
       @user = User.new(:email => email, :username => register_api_params[:username], :password => password, :device_token => register_api_params[:device_token], :lat => register_api_params[:lat], :lng => register_api_params[:lng])
       @user.save!
       # images = images_with_distance(@user, register_api_params[:distance])
-      images = UserImage.where('user_id = ?', @user.id).order("created_at DESC").limit(6)
+      images = UserImage.where('user_id = ?', @user.id).order("created_at DESC")
       images = add_likes(images)
       render :json => {:user => {:id => @user.id, :username => @user.username, :auth_token => @user.auth_token, :device_token => @user.device_token, :notification_count => @user.notification_count, :created_at => @user.created_at, :updated_at => @user.updated_at, :lng => @user.lng, :lat => @user.lat}, :images => images}
     else
       @user.update_attribute('lng', register_api_params[:lng].to_f)
       @user.update_attribute('lat', register_api_params[:lat].to_f)
       # images = images_with_distance(@user, register_api_params[:distance])
-      images = UserImage.where('user_id = ?', @user.id).order("created_at DESC").limit(6)
+      images = UserImage.where('user_id = ?', @user.id).order("created_at DESC")
       images = add_likes(images)
       render :json => {:user => {:id => @user.id, :username => @user.username, :auth_token => @user.auth_token, :device_token => @user.device_token, :notification_count => @user.notification_count, :created_at => @user.created_at, :updated_at => @user.updated_at, :lng => @user.lng, :lat => @user.lat}, :images => images}
     end
@@ -41,7 +41,7 @@ class UserController < ApiController
         @user = User.create(:email => email, :username => register_api_params[:username], :password => register_api_params[:password], :device_token => register_api_params[:device_token], :lat => register_api_params[:lat], :lng => register_api_params[:lng])
         puts "NEW USER:::::::", @user.inspect
         puts "ERRORS:::::::", @user.errors.inspect
-        images = UserImage.where('user_id = ?', @user.id).order("created_at DESC").limit(6)
+        images = UserImage.where('user_id = ?', @user.id).order("created_at DESC")
         images = add_likes(images)
         render :json => {:user => {:id => @user.id, :username => @user.username, :auth_token => @user.auth_token, :device_token => @user.device_token, :notification_count => @user.notification_count, :created_at => @user.created_at, :updated_at => @user.updated_at, :lng => @user.lng, :lat => @user.lat}, :images => images}
       else
@@ -58,7 +58,7 @@ class UserController < ApiController
           @user.update_attribute('lng', register_api_params[:lng].to_f)
           @user.update_attribute('lat', register_api_params[:lat].to_f)
           puts "ALREADY USER:::::::", @user.inspect
-          images = UserImage.where('user_id = ?', @user.id).order("created_at DESC").limit(6)
+          images = UserImage.where('user_id = ?', @user.id).order("created_at DESC")
           images = add_likes(images)
           render :json => {:user => {:id => @user.id, :username => @user.username, :auth_token => @user.auth_token, :device_token => @user.device_token, :notification_count => @user.notification_count, :created_at => @user.created_at, :updated_at => @user.updated_at, :lng => @user.lng, :lat => @user.lat}, :images => images}
         end
