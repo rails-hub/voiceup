@@ -354,12 +354,14 @@ class UserController < ApiController
       imgs = UserImage.where('user_id != ?', user.id).order("created_at DESC")
       puts "Explain Query 1", UserImage.where('user_id != ?', user.id).order("created_at DESC").explain
     elsif dis == 0
-      imgs = UserImage.where('user_id != ? and category like ?', user.id, "%#{cat},%").order("created_at DESC")
-      puts "Explain Query 2", UserImage.where('user_id != ? and category like ?', user.id, "%#{cat},%").order("created_at DESC").explain
+      category = "#" + cat
+      imgs = UserImage.where('user_id != ? and category like ?', user.id, "%#{category},%").order("created_at DESC")
+      puts "Explain Query 2", UserImage.where('user_id != ? and category like ?', user.id, "%#{category},%").order("created_at DESC").explain
       return imgs
     else
-      imgs = UserImage.where('user_id != ? and category like ?', user.id, "%#{cat},%").order("created_at DESC")
-      puts "Explain Query 3", UserImage.where('user_id != ? and category like ?', user.id, "%#{cat},%").order("created_at DESC").explain
+      category = "#" + cat
+      imgs = UserImage.where('user_id != ? and category like ?', user.id, "%#{category},%").order("created_at DESC")
+      puts "Explain Query 3", UserImage.where('user_id != ? and category like ?', user.id, "%#{category},%").order("created_at DESC").explain
     end
     unless imgs.blank?
       imgs.each do |f|
