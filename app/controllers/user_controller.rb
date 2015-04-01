@@ -167,6 +167,7 @@ class UserController < ApiController
         img = UserImage.new
         img.avatar = data
         img.user_id = user.id
+        img.local_path = pic_api_params[:local_path]
         puts "AAAAAAAAAAAAAAAAA", img.errors.inspect
         puts "AAAAAAAAAAAAAAAAA", img.errors.inspect
         puts "AAAAAAAAAAAAAAAAA", img.errors.inspect
@@ -450,7 +451,7 @@ class UserController < ApiController
   end
 
   def pic_api_params
-    params.permit(:auth_token, :username, :image_data, :lng, :lat, :box_id, :title, :category, :id)
+    params.permit(:auth_token, :username, :image_data, :lng, :lat, :box_id, :title, :category, :id, :local_path)
   end
 
   def user_img_params
