@@ -190,6 +190,8 @@ class UserController < ApiController
     unless user.blank?
       user.update_attributes(:lng => user_img_params[:lng].to_f, :lat => user_img_params[:lat].to_f)
       image = UserImage.where('id = ?', pic_api_params[:id]).first
+      puts "FIND IMAGE FOR #{pic_api_params[:id]}::::"
+      puts "IMAGE IS::::::",image.inspect
       if image.blank?
         image.destroy!
         success "Deleted Successfully."
