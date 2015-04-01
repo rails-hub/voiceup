@@ -39,18 +39,29 @@ class UserController < ApiController
       @user = User.find_by_email(email)
       if @user.blank?
         @user = User.create(:email => email, :username => register_api_params[:username], :password => register_api_params[:password], :device_token => register_api_params[:device_token], :lat => register_api_params[:lat], :lng => register_api_params[:lng])
-        puts "NEW USER:::::::",@user.inspect
-        puts "ERRORS:::::::",@user.errors.inspect
+        puts "NEW USER:::::::", @user.inspect
+        puts "ERRORS:::::::", @user.errors.inspect
         images = UserImage.where('user_id = ?', @user.id).order("created_at DESC").limit(6)
         images = add_likes(images)
         render :json => {:user => {:id => @user.id, :username => @user.username, :auth_token => @user.auth_token, :device_token => @user.device_token, :notification_count => @user.notification_count, :created_at => @user.created_at, :updated_at => @user.updated_at, :lng => @user.lng, :lat => @user.lat}, :images => images}
       else
-        @user.update_attribute('lng', register_api_params[:lng].to_f)
-        @user.update_attribute('lat', register_api_params[:lat].to_f)
-        puts "ALREADY USER:::::::",@user.inspect
-        images = UserImage.where('user_id = ?', @user.id).order("created_at DESC").limit(6)
-        images = add_likes(images)
-        render :json => {:user => {:id => @user.id, :username => @user.username, :auth_token => @user.auth_token, :device_token => @user.device_token, :notification_count => @user.notification_count, :created_at => @user.created_at, :updated_at => @user.updated_at, :lng => @user.lng, :lat => @user.lat}, :images => images}
+        @user_d = User.find_for_database_authentication({:email => params[:email].downcase})
+        if (!@user_d.nil?)
+          if (!@user_d.valid_password?(params[:password]))
+            @user_d = nil
+          end
+        end
+
+        if @user_d.nil?
+          error "Your username or password was incorrect."
+        else
+          @user.update_attribute('lng', register_api_params[:lng].to_f)
+          @user.update_attribute('lat', register_api_params[:lat].to_f)
+          puts "ALREADY USER:::::::", @user.inspect
+          images = UserImage.where('user_id = ?', @user.id).order("created_at DESC").limit(6)
+          images = add_likes(images)
+          render :json => {:user => {:id => @user.id, :username => @user.username, :auth_token => @user.auth_token, :device_token => @user.device_token, :notification_count => @user.notification_count, :created_at => @user.created_at, :updated_at => @user.updated_at, :lng => @user.lng, :lat => @user.lat}, :images => images}
+        end
       end
     rescue Exception => e
       error "Please provide all required fields"
@@ -194,7 +205,7 @@ class UserController < ApiController
       user.update_attributes(:lng => user_img_params[:lng].to_f, :lat => user_img_params[:lat].to_f)
       image = UserImage.where('id = ?', pic_api_params[:id]).first
       puts "FIND IMAGE FOR #{pic_api_params[:id]}::::"
-      puts "IMAGE IS::::::",image.inspect
+      puts "IMAGE IS::::::", image.inspect
       unless image.blank?
         image.destroy!
         success "Deleted Successfully."
