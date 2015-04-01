@@ -354,7 +354,7 @@ class UserController < ApiController
       # imgs = UserImage.where('user_id != ?', user.id).order("created_at DESC")
       # puts "Explain Query 1", UserImage.where('user_id != ?', user.id).order("created_at DESC").explain
       imgs = UserImage.find_by_sql("SELECT user_images.*, COUNT(user_likes.id)
-       AS likes FROM user_images, user_likes WHERE user_likes.user_image_id = user_images.id AND user_images.user_id != #{user.id}
+       AS likes FROM user_images LEFT JOIN user_likes ON user_likes.user_image_id = user_images.id WHERE user_images.user_id != #{user.id}
        GROUP BY user_images.id ORDER BY likes DESC")
     elsif dis == 0
       tags = cat.split(",").map{|str| "%#{str},%" }
@@ -362,7 +362,7 @@ class UserController < ApiController
       # imgs = UserImage.where('user_id != ? and category like any(array[?])', user.id, tags).order("created_at DESC")
       # puts "Explain Query 2", UserImage.where('user_id != ? and category like any(array[?])', user.id, tags).order("created_at DESC").explain
       imgs = UserImage.find_by_sql("SELECT user_images.*, COUNT(user_likes.id)
-       AS likes FROM user_images, user_likes WHERE user_likes.user_image_id = user_images.id AND user_images.user_id != #{user.id} and user_images.category like any(array[#{tags}])
+       AS likes FROM user_images LEFT JOIN user_likes ON user_likes.user_image_id = user_images.id WHERE user_images.user_id != #{user.id} and user_images.category like any(array[#{tags}])
        GROUP BY user_images.id ORDER BY likes DESC")
 
       return imgs
@@ -372,7 +372,7 @@ class UserController < ApiController
       # imgs = UserImage.where('user_id != ? and category like any(array[?])', user.id, tags).order("created_at DESC")
       # puts "Explain Query 3", UserImage.where('user_id != ? and category like any(array[?])', user.id, tags).order("created_at DESC").explain
       imgs = UserImage.find_by_sql("SELECT user_images.*, COUNT(user_likes.id)
-       AS likes FROM user_images, user_likes WHERE user_likes.user_image_id = user_images.id AND user_images.user_id != #{user.id} and user_images.category like any(array[#{tags}])
+       AS likes FROM user_images LEFT JOIN user_likes ON user_likes.user_image_id = user_images.id WHERE user_images.user_id != #{user.id} and user_images.category like any(array[#{tags}])
        GROUP BY user_images.id ORDER BY likes DESC")
     end
     unless imgs.blank?
