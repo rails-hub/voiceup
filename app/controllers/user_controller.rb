@@ -352,7 +352,7 @@ class UserController < ApiController
     users_images = []
     if cat == "every_all"
       imgs = UserImage.where('user_id != ?', user.id).order("created_at DESC")
-      puts "Explain Query 1", UserImage.where('user_id != ? and category like ?', user.id, "#{cat},").order("created_at DESC").explain
+      puts "Explain Query 1", UserImage.where('user_id != ?', user.id).order("created_at DESC").explain
     elsif dis == 0
       imgs = UserImage.where('user_id != ? and category like ?', user.id, "#{cat},").order("created_at DESC")
       puts "Explain Query 2", UserImage.where('user_id != ? and category like ?', user.id, "#{cat},").order("created_at DESC").explain
