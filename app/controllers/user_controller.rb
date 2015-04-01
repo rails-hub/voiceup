@@ -185,7 +185,7 @@ class UserController < ApiController
     user = User.find_by_auth_token(user_img_params[:auth_token])
     unless user.blank?
       user.update_attributes(:lng => user_img_params[:lng].to_f, :lat => user_img_params[:lat].to_f)
-      image = UserImage.where('id != ?', pic_api_params[:id]).first
+      image = UserImage.where('id = ?', pic_api_params[:id]).first
       if image.blank?
         image.destroy!
         success "Deleted Successfully."
