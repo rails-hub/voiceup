@@ -38,7 +38,7 @@ class UserController < ApiController
       email = register_api_params[:email].downcase
       @user = User.find_by_email(email)
       if @user.blank?
-        @user = User.create(:email => email, :username => register_api_params[:username], :password => register_api_params[:password], :device_token => register_api_params[:device_token], :lat => register_api_params[:lat], :lng => register_api_params[:lng])
+        @user = User.create!(:email => email, :username => register_api_params[:username], :password => register_api_params[:password], :device_token => register_api_params[:device_token], :lat => register_api_params[:lat], :lng => register_api_params[:lng])
         puts "NEW USER:::::::",@user.inspect
         images = UserImage.where('user_id = ?', @user.id).order("created_at DESC").limit(6)
         images = add_likes(images)
