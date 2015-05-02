@@ -357,8 +357,9 @@ class UserController < ApiController
       imgs = UserImage.find_by_sql("SELECT user_images.*, COUNT(user_likes.id)
        AS likes FROM user_images LEFT JOIN user_likes ON user_likes.user_image_id = user_images.id WHERE user_images.user_id != #{user.id}
        GROUP BY user_images.id ORDER BY likes DESC")
-    elsif dis == 0
+    elsif dis == 0 || dis == "0"
       tags = cat.split(",").map{|str| "%#{str},%" }
+      tags = tags.gsub('"',"'")
       puts "tags:::::::::",tags.inspect
       # imgs = UserImage.where('user_id != ? and category like any(array[?])', user.id, tags).order("created_at DESC")
       # puts "Explain Query 2", UserImage.where('user_id != ? and category like any(array[?])', user.id, tags).order("created_at DESC").explain
@@ -369,7 +370,8 @@ class UserController < ApiController
       return imgs
     else
       tags = cat.split(",").map{|str| "%#{str},%" }
-      # puts "tags:::::::::",tags.inspect
+      tags = tags.gsub('"',"'")
+      puts "tags:::::::::",tags.inspect
       # imgs = UserImage.where('user_id != ? and category like any(array[?])', user.id, tags).order("created_at DESC")
       # puts "Explain Query 3", UserImage.where('user_id != ? and category like any(array[?])', user.id, tags).order("created_at DESC").explain
       imgs = UserImage.find_by_sql("SELECT user_images.*, COUNT(user_likes.id)
